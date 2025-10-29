@@ -1,6 +1,8 @@
 # 🍅 Pomodoro Timer - React/TypeScript App
 
-A beautiful, modern Pomodoro Timer built with React, TypeScript, and styled-components. Features a pixel art stopwatch design, use-sound hook for notifications, and comprehensive timer functionality.
+🚀 **[Live Demo](https://pomodoro-app-wine-phi.vercel.app/)** - Try it now!
+
+A beautiful, modern Pomodoro Timer built with React, TypeScript, and styled-components. Features dynamic pixel art backgrounds, streamlined UI with +/- time controls, and comprehensive timer functionality.
 
 ## ✨ Features
 
@@ -12,24 +14,25 @@ A beautiful, modern Pomodoro Timer built with React, TypeScript, and styled-comp
 - **Pixel art stopwatch design** with animated progress indicator
 
 ### Visual Design
-- **Modern glass-morphism UI** with dark theme and gradient backgrounds
-- **Pixel art stopwatch timer** with progress overlay animation
-- **Styled-components** for component-scoped styling
-- **Smooth animations** and hover effects throughout the interface
+- **Dynamic pixel art backgrounds** that change with light/dark themes
+- **Modern glass-morphism UI** with semi-transparent overlays
+- **Floating title** that blends seamlessly with background artwork
+- **Streamlined interface** with intuitive +/- time adjustment buttons
+- **Smooth theme transitions** and hover effects throughout
 - **Responsive design** that works on desktop and mobile devices
 
 ### Smart Features
-- **use-sound hook** for high-quality audio notifications
+- **use-sound hook** for high-quality audio notifications with toggle control
 - **Browser notifications** for when you're in other tabs
 - **Statistics tracking** - completed pomodoros, total focus time, daily streak
-- **Persistent settings** - preferences saved in localStorage
+- **Persistent settings** - preferences and stats saved in localStorage
 - **TypeScript** for type safety and better development experience
 
-### Settings Panel
-- Adjust focus time (1-60 minutes)
-- Adjust short break time (1-30 minutes)  
-- Adjust long break time (1-60 minutes)
-- Toggle sound notifications on/off
+### Simple Controls
+- **+/- buttons** to adjust time for the current mode (1-60 minutes)
+- **Audio toggle** button to enable/disable sound notifications
+- **Theme toggle** in top-right corner for light/dark mode switching
+- **Mode selection** buttons for Focus, Short Break, and Long Break
 
 ## 🚀 Quick Start
 
