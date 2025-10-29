@@ -47,12 +47,25 @@ export const useTimer = () => {
     if (savedStats) {
       const parsed = JSON.parse(savedStats);
       const today = new Date().toDateString();
+      const lastUsed = new Date(parsed.lastUsed);
+      const todayDate = new Date();
       
-      // Reset streak if last used was not today
-      if (parsed.lastUsed !== today) {
-        setStats(prev => ({ ...prev, currentStreak: 0 }));
+      // Calculate days difference
+      const timeDiff = todayDate.getTime() - lastUsed.getTime();
+      const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+      
+      // Reset streak only if more than 1 day has passed
+      if (daysDiff > 1) {
+        setStats({
+          ...parsed,
+          currentStreak: 0,
+          lastUsed: today
+        });
       } else {
-        setStats(parsed);
+        setStats({
+          ...parsed,
+          lastUsed: daysDiff === 1 ? today : parsed.lastUsed
+        });
       }
     }
   }, []);
@@ -152,9 +165,11 @@ export const useTimer = () => {
   const completeTimer = useCallback(() => {
     if (timerState.currentMode === 'focus') {
       // Focus session completed
+      const newCompletedCount = stats.completedPomodoros + 1;
+      
       setStats(prev => ({
         ...prev,
-        completedPomodoros: prev.completedPomodoros + 1,
+        completedPomodoros: newCompletedCount,
         totalFocusTime: prev.totalFocusTime + (settings.focus * 60),
         currentStreak: prev.currentStreak + 1,
         lastUsed: new Date().toDateString()
@@ -162,8 +177,8 @@ export const useTimer = () => {
 
       setTimerState(prev => ({ ...prev, currentSession: prev.currentSession + 1 }));
 
-      // Auto switch to break
-      if ((stats.completedPomodoros + 1) % 4 === 0) {
+      // Auto switch to break - use the new count
+      if (newCompletedCount % 4 === 0) {
         switchMode('longBreak');
       } else {
         switchMode('shortBreak');

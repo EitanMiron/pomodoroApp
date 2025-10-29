@@ -46,13 +46,22 @@ const PomodoroTimer = (): React.ReactElement => {
     onend: () => setIsCountdownPlaying(false)
   });
 
-  // Enable audio function - must be called with user interaction
-  const enableAudio = useCallback(() => {
-    // Play a brief sound to enable audio context
-    playTimerChime();
-    setTimeout(() => stopTimerChime(), 100); // Stop immediately after enabling
-    setAudioEnabled(true);
-  }, [playTimerChime, stopTimerChime]);
+  // Toggle audio function - can enable or disable audio
+  const toggleAudio = useCallback(() => {
+    if (!audioEnabled) {
+      // Enable audio - play a brief sound to enable audio context
+      playTimerChime();
+      setTimeout(() => stopTimerChime(), 100); // Stop immediately after enabling
+      setAudioEnabled(true);
+    } else {
+      // Disable audio - stop any playing sounds
+      if (isCountdownPlaying) {
+        stopTimerChime();
+        setIsCountdownPlaying(false);
+      }
+      setAudioEnabled(false);
+    }
+  }, [audioEnabled, playTimerChime, stopTimerChime, isCountdownPlaying]);
 
   // Start countdown sound when 12 seconds left
   useEffect(() => {
@@ -249,7 +258,7 @@ const PomodoroTimer = (): React.ReactElement => {
           </ControlButton>
           <ControlButton
             variant="secondary"
-            onClick={enableAudio}
+            onClick={toggleAudio}
             style={{ 
               background: audioEnabled 
                 ? 'linear-gradient(135deg, #28a745, #20c997)' 
@@ -258,7 +267,7 @@ const PomodoroTimer = (): React.ReactElement => {
               fontSize: '0.8rem'
             }}
           >
-            {audioEnabled ? '🔊 AUDIO ON' : '🔇 ENABLE AUDIO'}
+            {audioEnabled ? '🔊 DISABLE AUDIO' : '🔇 ENABLE AUDIO'}
           </ControlButton>
         </TimerControls>
       </TimerSection>
