@@ -46,7 +46,6 @@ export const useTimer = () => {
 
     if (savedStats) {
       const parsed = JSON.parse(savedStats);
-      const today = new Date().toDateString();
       const lastUsed = new Date(parsed.lastUsed);
       const todayDate = new Date();
       
@@ -54,18 +53,17 @@ export const useTimer = () => {
       const timeDiff = todayDate.getTime() - lastUsed.getTime();
       const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
       
-      // Reset streak only if more than 1 day has passed
+      // Handle streak based on days since last use
       if (daysDiff > 1) {
+        // More than 1 day gap - reset streak to 0 (will become 1 on first completion today)
         setStats({
           ...parsed,
           currentStreak: 0,
-          lastUsed: today
+          lastUsed: parsed.lastUsed // Keep original lastUsed until first completion
         });
       } else {
-        setStats({
-          ...parsed,
-          lastUsed: daysDiff === 1 ? today : parsed.lastUsed
-        });
+        // Same day or next day - keep existing stats
+        setStats(parsed);
       }
     }
   }, []);
@@ -166,13 +164,38 @@ export const useTimer = () => {
     if (timerState.currentMode === 'focus') {
       // Focus session completed
       const newCompletedCount = stats.completedPomodoros + 1;
+      const today = new Date().toDateString();
+      const lastUsedDate = stats.lastUsed;
+      
+      // Check if this is the first completion today
+      const isFirstCompletionToday = lastUsedDate !== today;
+      
+      // Calculate new streak
+      let newStreak = stats.currentStreak;
+      if (isFirstCompletionToday) {
+        const lastUsed = new Date(lastUsedDate);
+        const todayDate = new Date();
+        const timeDiff = todayDate.getTime() - lastUsed.getTime();
+        const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+        
+        if (daysDiff === 1) {
+          // Consecutive day - increment streak
+          newStreak = stats.currentStreak + 1;
+        } else if (daysDiff > 1) {
+          // Gap in days - reset streak to 1 (today counts as day 1)
+          newStreak = 1;
+        } else {
+          // Same day, keep current streak
+          newStreak = stats.currentStreak;
+        }
+      }
       
       setStats(prev => ({
         ...prev,
         completedPomodoros: newCompletedCount,
         totalFocusTime: prev.totalFocusTime + (settings.focus * 60),
-        currentStreak: prev.currentStreak + 1,
-        lastUsed: new Date().toDateString()
+        currentStreak: newStreak,
+        lastUsed: today
       }));
 
       setTimerState(prev => ({ ...prev, currentSession: prev.currentSession + 1 }));
@@ -187,7 +210,7 @@ export const useTimer = () => {
       // Break completed, switch back to focus
       switchMode('focus');
     }
-  }, [timerState.currentMode, settings.focus, stats.completedPomodoros, switchMode]);
+  }, [timerState.currentMode, settings.focus, stats.completedPomodoros, stats.currentStreak, stats.lastUsed, switchMode]);
 
   // Set the completion callback
   onCompleteRef.current = completeTimer;
